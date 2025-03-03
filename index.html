@@ -204,9 +204,9 @@
   
   <!-- Music Switcher (visible on tasks and workout views) -->
   <div id="musicSwitcher">
-    <button id="prevButton">Prev</button>
-    <button id="playPauseButton">Play</button>
-    <button id="nextButton">Next</button>
+    <button id="prevButton">⏮</button>
+    <button id="playPauseButton">⏯️</button>
+    <button id="nextButton">⏭️</button>
     <span id="trackTitle"></span>
   </div>
   
@@ -515,11 +515,11 @@
     }
     function playSong() {
       audioPlayer.play();
-      playPauseButton.textContent = "Pause";
+      playPauseButton.textContent = "⏯";
     }
     function pauseSong() {
       audioPlayer.pause();
-      playPauseButton.textContent = "Play";
+      playPauseButton.textContent = "⏯";
     }
     function nextSong() {
       currentSongIndex = (currentSongIndex + 1) % songList.length;
