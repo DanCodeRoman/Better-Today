@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Better Today</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    #title {
+      font-size: 48px;
+      color: black;
+      margin: 20px 0;
+    }
+    #score {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      font-size: 24px;
+      color: black;
+    }
+    #challenge {
+      font-size: 36px;
+      color: black;
+      margin: 40px;
+    }
+    #timer {
+      font-size: 32px;
+      color: black;
+      margin-bottom: 20px;
+    }
+    #actionButton {
+      font-size: 24px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <div id="title">Better Today</div>
+  <div id="challenge">Loading challenge...</div>
+  <div id="timer">Time: 0 seconds</div>
+  <button id="actionButton">I did it!</button>
+
+  <script>
+    // Exactly 100 unique productivity tasks
+    const tasks = [
+      { task: "Write a journal entry", time: 30 },
+      { task: "Meditate for 5 minutes", time: 300 },
+      { task: "Do 15 squats", time: 20 },
+      { task: "Plan your day", time: 60 },
+      { task: "Declutter your email inbox", time: 90 },
+      { task: "Make a healthy smoothie", time: 120 },
+      { task: "Call a friend to check in", time: 180 },
+      { task: "Read a motivational article", time: 150 },
+      { task: "Practice a new language for 10 minutes", time: 600 },
+      { task: "Go for a 15-minute walk", time: 900 },
+      { task: "Organize your workspace", time: 120 },
+      { task: "Write down three things you're grateful for", time: 60 },
+      { task: "Stretch for 5 minutes", time: 300 },
+      { task: "Learn a new skill online for 10 minutes", time: 600 },
+      { task: "Clean your desk", time: 180 },
+      { task: "Water your plants", time: 30 },
+      { task: "Plan your budget", time: 240 },
+      { task: "Review your goals for the week", time: 120 },
+      { task: "Research a topic you're curious about", time: 180 },
+      { task: "Write a short poem or story", time: 300 },
+      { task: "Do 10 pushups", time: 20 },
+      { task: "Organize your bookshelf", time: 150 },
+      { task: "Learn a new recipe", time: 300 },
+      { task: "Tidy up your closet", time: 180 },
+      { task: "Clean your kitchen counter", time: 90 },
+      { task: "Read a chapter of a book", time: 600 },
+      { task: "Do a 10-minute workout", time: 600 },
+      { task: "Listen to a podcast episode", time: 900 },
+      { task: "Write down your weekly accomplishments", time: 120 },
+      { task: "Plan a healthy meal", time: 180 },
+      { task: "Do a 5-minute breathing exercise", time: 300 },
+      { task: "Organize your digital files", time: 240 },
+      { task: "Call a family member", time: 180 },
+      { task: "Set your personal goals", time: 120 },
+      { task: "Read a news article", time: 90 },
+      { task: "Take a 10-minute break", time: 600 },
+      { task: "Plan a future vacation", time: 300 },
+      { task: "Clean your smartphone screen", time: 30 },
+      { task: "Write a thank-you note", time: 120 },
+      { task: "Update your resume", time: 240 },
+      { task: "Check your finances", time: 180 },
+      { task: "Review your calendar", time: 60 },
+      { task: "Plan a study schedule", time: 180 },
+      { task: "Do 20 jumping jacks", time: 30 },
+      { task: "Do a 5-minute stretching routine", time: 300 },
+      { task: "Learn a new word and its meaning", time: 60 },
+      { task: "Plan your week ahead", time: 180 },
+      { task: "Write a short story idea", time: 120 },
+      { task: "Do 15 sit-ups", time: 20 },
+      { task: "Organize your workspace drawers", time: 150 },
+      { task: "Listen to classical music", time: 600 },
+      { task: "Do a quick 5-minute meditation", time: 300 },
+      { task: "Sketch something from memory", time: 180 },
+      { task: "Review a past journal entry", time: 120 },
+      { task: "Clean your computer desktop", time: 90 },
+      { task: "Plan a social meetup", time: 240 },
+      { task: "Watch a TED talk", time: 900 },
+      { task: "Do a quick 10-minute yoga routine", time: 600 },
+      { task: "Organize your photos", time: 300 },
+      { task: "Review your long-term goals", time: 180 },
+      { task: "Update your personal blog", time: 240 },
+      { task: "Write down a new idea", time: 60 },
+      { task: "Take a brisk 10-minute walk", time: 600 },
+      { task: "Make a to-do list for tomorrow", time: 120 },
+      { task: "Do 10 burpees", time: 30 },
+      { task: "Practice mindfulness for 5 minutes", time: 300 },
+      { task: "Clean your glasses or screen", time: 60 },
+      { task: "Organize your desk supplies", time: 150 },
+      { task: "Review a motivational quote", time: 30 },
+      { task: "Do a 10-minute stretching session", time: 600 },
+      { task: "Plan your study breaks", time: 120 },
+      { task: "Write down your dreams", time: 180 },
+      { task: "Take 5 deep breaths", time: 60 },
+      { task: "Review your to-do list", time: 90 },
+      { task: "Plan a self-care activity", time: 240 },
+      { task: "Make a healthy snack", time: 180 },
+      { task: "Do 15 lunges", time: 30 },
+      { task: "Write a letter to your future self", time: 300 },
+      { task: "Organize your workspace cables", time: 90 },
+      { task: "Plan your week’s meals", time: 240 },
+      { task: "Listen to an educational podcast", time: 900 },
+      { task: "Do a 10-minute bodyweight workout", time: 600 },
+      { task: "Review your personal mission statement", time: 180 },
+      { task: "Plan a creative project", time: 300 },
+      { task: "Write down a new skill to learn", time: 60 },
+      { task: "Take a power nap", time: 900 },
+      { task: "Organize your bookshelf by genre", time: 180 },
+      { task: "Do a 5-minute cardio exercise", time: 300 },
+      { task: "Prepare a healthy breakfast", time: 240 },
+      { task: "Practice gratitude for 5 minutes", time: 300 },
+      { task: "Clean out your purse or wallet", time: 120 },
+      { task: "Write down your personal values", time: 180 },
+      { task: "Review your progress on goals", time: 120 },
+      { task: "Plan a weekend activity", time: 240 },
+      { task: "Do 20 high knees", time: 30 },
+      { task: "Review a personal success story", time: 60 },
+      { task: "Listen to a motivational speech", time: 300 },
+      { task: "Organize your digital calendar", time: 150 },
+      { task: "Plan your next learning session", time: 180 },
+      { task: "Write down something new you learned", time: 120 }
+    ];
+
+    const challengeDiv = document.getElementById("challenge");
+    const timerDiv = document.getElementById("timer");
+    const scoreDiv = document.getElementById("score");
+    const actionButton = document.getElementById("actionButton");
+
+    let score = 0;
+    let currentTask;
+    let remainingTime;
+    let countdownInterval;
+
+    // Function to get a random background color
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+    document.body.style.backgroundColor = getRandomColor();
+
+    // Load a new task and start the timer
+    function loadNewTask() {
+      const randomIndex = Math.floor(Math.random() * tasks.length);
+      currentTask = tasks[randomIndex];
+      challengeDiv.textContent = currentTask.task;
+      remainingTime = currentTask.time;
+      timerDiv.textContent = "Time: " + remainingTime + " seconds";
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        if (remainingTime > 0) {
+          remainingTime--;
+          timerDiv.textContent = "Time: " + remainingTime + " seconds";
+        } else {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+    }
+
+    // Initial task load
+    loadNewTask();
+
+    // Update score and load next challenge when button is clicked
+    actionButton.addEventListener("click", () => {
+      score += 100;
+      scoreDiv.textContent = "Score: " + score;
+      loadNewTask();
+    });
+  </script>
+</body>
+</html>
