@@ -3,51 +3,251 @@
 <head>
   <meta charset="UTF-8">
   <title>Better Today</title>
+  <!-- Elegant cursive font for the title -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
   <style>
+    /* Make all text non-selectable */
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
+      position: relative;
+      font-family: Arial, sans-serif;
     }
-    #title {
-      font-size: 48px;
-      color: black;
-      margin: 20px 0;
-    }
+    /* Score counter: fixed top-right in a grey box with shadow & 3D effect */
     #score {
       position: fixed;
       top: 10px;
       right: 20px;
       font-size: 24px;
       color: black;
+      background: #eee;
+      padding: 10px 15px;
+      border-radius: 8px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+      font-weight: bold;
+      z-index: 10;
     }
-    #challenge {
-      font-size: 36px;
+    /* Workout Zone Button: top left with flashy white 3D text */
+    #workoutZoneButton {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 24px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      z-index: 10;
+      background: linear-gradient(45deg, #555, #aaa);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+    /* Title at the top (centered) with elegant cursive font */
+    #title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 48px;
       color: black;
-      margin: 40px;
+      text-align: center;
+      margin: 20px 0;
+      cursor: pointer;
+      z-index: 10;
     }
-    #timer {
+    /* Common container style for tasks and workout views */
+    .mainContainer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 80%;
+    }
+    /* Tasks view container */
+    #container {
+      display: block;
+    }
+    /* Workout view container */
+    #workoutContainer {
+      display: none;
+    }
+    /* Notepad container */
+    #notepadContainer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      text-align: center;
+      display: none;
+    }
+    /* Challenge text (for tasks view) styled with 3D effect */
+    #challenge {
+      font-family: 'Impact', sans-serif;
+      font-size: 64px;
+      color: black;
+      text-shadow: 4px 4px 5px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+    /* Timer styling for tasks/workout views */
+    .timer {
       font-size: 32px;
       color: black;
       margin-bottom: 20px;
     }
-    #actionButton {
+    /* "I did it!" button: rounded, grey gradient, shadowed, 3D & animated */
+    .actionButton {
       font-size: 24px;
       padding: 10px 20px;
       cursor: pointer;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(45deg, #ccc, #888);
+      box-shadow: 3px 3px 8px rgba(0,0,0,0.4);
+      transition: all 0.3s ease;
+    }
+    .actionButton:hover {
+      transform: scale(1.05);
+      box-shadow: 5px 5px 10px rgba(0,0,0,0.6);
+    }
+    .actionButton:active {
+      transform: scale(0.98);
+    }
+    /* Animated score addition styling */
+    .score-animation {
+      position: absolute;
+      color: yellow;
+      font-size: 48px;
+      font-weight: bold;
+      pointer-events: none;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      animation: floatUp 1.5s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-50px); }
+    }
+    /* Notepad styling: large textarea with a lined-paper background */
+    #notepad {
+      width: 100%;
+      height: 60vh;
+      font-size: 20px;
+      padding: 20px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      resize: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        #fff,
+        #fff 28px,
+        #ddd 29px
+      );
+      outline: none;
+      font-family: "Courier New", Courier, monospace;
+    }
+    /* Music switcher: fixed bottom left with simple control buttons */
+    #musicSwitcher {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.8);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+    #musicSwitcher button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    #trackTitle {
+      margin-left: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <!-- Score Display -->
   <div id="score">Score: 0</div>
+  <!-- Workout Zone Button (toggles between tasks and workout view) -->
+  <div id="workoutZoneButton">Workout Zone</div>
+  <!-- Title: clicking toggles between tasks and notepad -->
   <div id="title">Better Today</div>
-  <div id="challenge">Loading challenge...</div>
-  <div id="timer">Time: 0 seconds</div>
-  <button id="actionButton">I did it!</button>
-
+  
+  <!-- Tasks Container (regular productivity tasks) -->
+  <div id="container" class="mainContainer">
+    <div id="challenge">Loading challenge...</div>
+    <div id="timer" class="timer">Time: 0 seconds</div>
+    <button id="actionButton" class="actionButton">I did it!</button>
+  </div>
+  
+  <!-- Workout Container -->
+  <div id="workoutContainer" class="mainContainer">
+    <div id="workoutInstruction" style="font-family: 'Impact', sans-serif; font-size: 64px; color: black; text-shadow: 4px 4px 5px rgba(0,0,0,0.3); margin-bottom:20px;">
+      Loading workout...
+    </div>
+    <div id="workoutTimer" class="timer">Time: 0 seconds</div>
+    <button id="workoutButton" class="actionButton">I did it!</button>
+  </div>
+  
+  <!-- Notepad Container -->
+  <div id="notepadContainer">
+    <textarea id="notepad" placeholder="Write your journal entry, notes, goals, or to-do list here..."></textarea>
+  </div>
+  
+  <!-- Music Switcher (visible on tasks and workout views) -->
+  <div id="musicSwitcher">
+    <button id="prevButton">Prev</button>
+    <button id="playPauseButton">Play</button>
+    <button id="nextButton">Next</button>
+    <span id="trackTitle"></span>
+  </div>
+  
+  <!-- Audio Element (hidden) -->
+  <audio id="audioPlayer" preload="auto"></audio>
+  
   <script>
-    // Exactly 100 unique productivity tasks
+    /* --------------------------
+       Global Variables & Score
+    --------------------------- */
+    let score = 0;
+    // For Tasks view
+    let currentTask;
+    let remainingTime;
+    let countdownInterval;
+    // For Workout view
+    let workoutMode = "pushups"; // can be "pushups", "situps", or "rest"
+    let workoutValue = 0;
+    let workoutRemainingTime;
+    let workoutCountdownInterval;
+    
+    /* --------------------------
+       Background Gradient Functions
+    --------------------------- */
+    function getRandomHexColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+    function setRandomGradient() {
+      let color1 = getRandomHexColor();
+      let color2 = getRandomHexColor();
+      document.body.style.background = 'linear-gradient(45deg, ' + color1 + ', ' + color2 + ')';
+    }
+    
+    /* --------------------------
+       Tasks View: 100 Predefined Tasks
+    --------------------------- */
     const tasks = [
       { task: "Write a journal entry", time: 30 },
       { task: "Meditate for 5 minutes", time: 300 },
@@ -150,55 +350,203 @@
       { task: "Plan your next learning session", time: 180 },
       { task: "Write down something new you learned", time: 120 }
     ];
-
-    const challengeDiv = document.getElementById("challenge");
-    const timerDiv = document.getElementById("timer");
-    const scoreDiv = document.getElementById("score");
-    const actionButton = document.getElementById("actionButton");
-
-    let score = 0;
-    let currentTask;
-    let remainingTime;
-    let countdownInterval;
-
-    // Function to get a random background color
-    function getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    }
-    document.body.style.backgroundColor = getRandomColor();
-
-    // Load a new task and start the timer
+    
     function loadNewTask() {
+      setRandomGradient();
       const randomIndex = Math.floor(Math.random() * tasks.length);
       currentTask = tasks[randomIndex];
-      challengeDiv.textContent = currentTask.task;
+      document.getElementById("challenge").textContent = currentTask.task;
       remainingTime = currentTask.time;
-      timerDiv.textContent = "Time: " + remainingTime + " seconds";
+      document.getElementById("timer").textContent = "Time: " + remainingTime + " seconds";
       clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
         if (remainingTime > 0) {
           remainingTime--;
-          timerDiv.textContent = "Time: " + remainingTime + " seconds";
+          document.getElementById("timer").textContent = "Time: " + remainingTime + " seconds";
         } else {
           clearInterval(countdownInterval);
         }
       }, 1000);
     }
-
-    // Initial task load
-    loadNewTask();
-
-    // Update score and load next challenge when button is clicked
-    actionButton.addEventListener("click", () => {
+    
+    /* --------------------------
+       Workout View Logic
+    --------------------------- */
+    function loadWorkoutTask() {
+      setRandomGradient();
+      const workoutInstruction = document.getElementById("workoutInstruction");
+      const workoutTimer = document.getElementById("workoutTimer");
+      clearInterval(workoutCountdownInterval);
+      
+      if (workoutMode === "pushups") {
+        // Random number between 10 and 30 for pushups
+        workoutValue = Math.floor(Math.random() * 21) + 10;
+        workoutInstruction.textContent = "Do " + workoutValue + " pushups";
+        // Set time: 3 sec per pushup
+        workoutRemainingTime = workoutValue * 3;
+      } else if (workoutMode === "situps") {
+        workoutValue = Math.floor(Math.random() * 21) + 10;
+        workoutInstruction.textContent = "Do " + workoutValue + " situps";
+        // Set time: 3 sec per situp
+        workoutRemainingTime = workoutValue * 3;
+      } else if (workoutMode === "rest") {
+        workoutInstruction.textContent = "Rest for 30 seconds";
+        workoutRemainingTime = 30;
+      }
+      workoutTimer.textContent = "Time: " + workoutRemainingTime + " seconds";
+      
+      workoutCountdownInterval = setInterval(() => {
+        if (workoutRemainingTime > 0) {
+          workoutRemainingTime--;
+          workoutTimer.textContent = "Time: " + workoutRemainingTime + " seconds";
+        } else {
+          clearInterval(workoutCountdownInterval);
+        }
+      }, 1000);
+    }
+    
+    /* --------------------------
+       Animated Score Addition
+    --------------------------- */
+    function showScoreAnimation() {
+      const anim = document.createElement("div");
+      anim.classList.add("score-animation");
+      anim.textContent = "+100";
+      const offsetX = Math.floor(Math.random() * 41) - 20;
+      const offsetY = Math.floor(Math.random() * 41) - 20;
+      const angle = Math.floor(Math.random() * 31) - 15;
+      anim.style.left = `calc(50% + ${offsetX}px)`;
+      anim.style.top = `calc(50% + ${offsetY}px)`;
+      anim.style.transform = `rotate(${angle}deg)`;
+      document.querySelector(".mainContainer").appendChild(anim);
+      setTimeout(() => { anim.remove(); }, 1500);
+    }
+    
+    /* --------------------------
+       Toggle Views:
+         - Title: toggles between Tasks view and Notepad view.
+         - Workout Zone Button: toggles between Tasks view and Workout view.
+    --------------------------- */
+    const tasksContainer = document.getElementById("container");
+    const workoutContainer = document.getElementById("workoutContainer");
+    const notepadContainer = document.getElementById("notepadContainer");
+    
+    // Title click toggles tasks <-> notepad.
+    document.getElementById("title").addEventListener("click", function() {
+      // If either tasks or workout view is visible, switch to notepad.
+      if (tasksContainer.style.display !== "none" || workoutContainer.style.display !== "none") {
+        tasksContainer.style.display = "none";
+        workoutContainer.style.display = "none";
+        notepadContainer.style.display = "block";
+      } else {
+        // From notepad, go back to tasks.
+        notepadContainer.style.display = "none";
+        tasksContainer.style.display = "block";
+      }
+    });
+    
+    // Workout Zone Button toggles tasks <-> workout.
+    document.getElementById("workoutZoneButton").addEventListener("click", function() {
+      // If workout is not active, switch to workout view.
+      if (workoutContainer.style.display === "none") {
+        // Hide both tasks and notepad.
+        tasksContainer.style.display = "none";
+        notepadContainer.style.display = "none";
+        workoutContainer.style.display = "block";
+        workoutMode = "pushups"; // reset cycle
+        loadWorkoutTask();
+      } else {
+        // If already in workout view, return to tasks view.
+        workoutContainer.style.display = "none";
+        tasksContainer.style.display = "block";
+      }
+    });
+    
+    /* --------------------------
+       Button Click Handlers
+    --------------------------- */
+    // Tasks view button
+    document.getElementById("actionButton").addEventListener("click", () => {
       score += 100;
-      scoreDiv.textContent = "Score: " + score;
+      document.getElementById("score").textContent = "Score: " + score;
+      showScoreAnimation();
       loadNewTask();
     });
+    
+    // Workout view button
+    document.getElementById("workoutButton").addEventListener("click", () => {
+      // Update score based on current workout task
+      if (workoutMode === "pushups") {
+        score += 300;
+        workoutMode = "situps";
+      } else if (workoutMode === "situps") {
+        score += 200;
+        workoutMode = "rest";
+      } else if (workoutMode === "rest") {
+        workoutMode = "pushups";
+      }
+      document.getElementById("score").textContent = "Score: " + score;
+      showScoreAnimation();
+      loadWorkoutTask();
+    });
+    
+    /* --------------------------
+       Music Switcher Logic
+    --------------------------- */
+    const audioPlayer = document.getElementById("audioPlayer");
+    const trackTitle = document.getElementById("trackTitle");
+    const playPauseButton = document.getElementById("playPauseButton");
+    let currentSongIndex = 0;
+    // Example song list – place your mp3 files in a folder named "music"
+    const songList = [
+      { title: "Song One", file: "music/song1.mp3" },
+      { title: "Song Two", file: "music/song2.mp3" },
+      { title: "Song Three", file: "music/song3.mp3" }
+    ];
+    // Shuffle: pick a random starting song.
+    currentSongIndex = Math.floor(Math.random() * songList.length);
+    
+    function loadSong(index) {
+      audioPlayer.src = songList[index].file;
+      trackTitle.textContent = songList[index].title;
+    }
+    function playSong() {
+      audioPlayer.play();
+      playPauseButton.textContent = "Pause";
+    }
+    function pauseSong() {
+      audioPlayer.pause();
+      playPauseButton.textContent = "Play";
+    }
+    function nextSong() {
+      currentSongIndex = (currentSongIndex + 1) % songList.length;
+      loadSong(currentSongIndex);
+      playSong();
+    }
+    function prevSong() {
+      currentSongIndex = (currentSongIndex - 1 + songList.length) % songList.length;
+      loadSong(currentSongIndex);
+      playSong();
+    }
+    
+    // Music switcher button events
+    document.getElementById("playPauseButton").addEventListener("click", () => {
+      if (audioPlayer.paused) {
+        playSong();
+      } else {
+        pauseSong();
+      }
+    });
+    document.getElementById("nextButton").addEventListener("click", nextSong);
+    document.getElementById("prevButton").addEventListener("click", prevSong);
+    
+    // When a song ends, automatically play the next.
+    audioPlayer.addEventListener("ended", nextSong);
+    
+    // Initial load
+    setRandomGradient();
+    loadNewTask();
+    loadSong(currentSongIndex);
   </script>
 </body>
 </html>
